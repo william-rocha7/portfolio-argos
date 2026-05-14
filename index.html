@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Argos - Arquitetura de Redes</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1a0033 0%, #0a001a 100%);
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #b066ff, #ff66b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        /* Ajuste para centralizar o gráfico gerado */
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ARGOS - REDE EXTERNA MG</h1>
+        <p class="subtitle">Mapeamento Arquitetural Multi-Páginas (MPA) e Fluxo de Dados</p>
+
+        <div class="mermaid">
+        graph TD
+            %% Customização de Temas Escuros no Grafico
+            %% (Sem caracteres especiais para evitar quebras no parser)
+            classDef server fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff;
+            classDef client fill:#0d47a1,stroke:#2196f3,stroke-width:2px,color:#ffffff;
+            classDef modules fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff;
+            classDef storage fill:#263238,stroke:#78909c,stroke-width:2px,color:#ffffff;
+
+            subgraph Servidor ["Backend - Google Apps Script Engine"]
+                STP["Setup.js - Variaveis de Ambiente e Globais"]:::server
+                DBJ["Database.js - Matrizes Estaticas e Malha Geo"]:::server
+                COD["Code.js - Roteador de Templates e Endpoints RPC"]:::server
+            end
+
+            subgraph EstruturaBase ["Componentes de Inclusao Estatica"]
+                DS["DesignSystem.html - Centralizacao de CSS Tokens"]:::client
+                COR["Core.html - Modais Globais e Canvas Engine"]:::client
+            end
+
+            subgraph Modulos ["Modulos e Telas do Sistema"]
+                IDX["Index.html - Dashboard Hub da Operacao"]:::modules
+                VST["VistoriaMG.html - Coleta Field-First e Fotos"]:::modules
+                CLN["CleanupMG.html - Saneamento e Higienizacao"]:::modules
+                AUD["AuditoriaMG.html - Checklist de Qualidade TAs"]:::modules
+                MAP["MapaMG.html - Motor Leaflet e Geospatial"]:::modules
+            end
+
+            GS[("Google Sheets - Base de Dados MG")]:::storage
+
+            STP --> COD
+            DBJ --> COD
+            
+            COD --> IDX
+            COD --> VST
+            COD --> CLN
+            COD --> AUD
+            COD --> MAP
+
+            IDX --- DS
+            VST --- DS
+            CLN --- DS
+            AUD --- DS
+            MAP --- DS
+
+            IDX --- COR
+            VST --- COR
+            CLN --- COR
+            AUD --- COR
+            MAP --- COR
+
+            IDX --> VST
+            IDX --> CLN
+            IDX --> AUD
+            IDX --> MAP
+
+            VST --> COD
+            CLN --> COD
+            AUD --> COD
+            MAP --> COD
+
+            COD <--> GS
+        </div>
+    </div>
+
+    <script>
+        // Inicializa o motor grafico com tema escuro nativo
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                background: '#1a0033',
+                primaryColor: '#4a148c',
+                lineColor: '#b066ff'
+            }
+        });
+    </script>
+</body>
+</html>
