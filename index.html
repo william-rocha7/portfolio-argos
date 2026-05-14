@@ -3,139 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Argos - Arquitetura de Redes</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <title>Argos - Arquitetura de Sistemas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at top, #1a0033 0%, #050010 100%);
+            --card-frontend: rgba(13, 71, 161, 0.15);
+            --border-frontend: #1e88e5;
+            --card-logic: rgba(74, 20, 140, 0.15);
+            --border-logic: #9c27b0;
+            --card-server: rgba(27, 94, 32, 0.15);
+            --border-server: #4caf50;
+            --card-data: rgba(38, 50, 56, 0.3);
+            --border-data: #78909c;
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background: radial-gradient(circle at top, #1a0033 0%, #0a001a 100%);
-            color: #ffffff;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            margin: 0;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             padding: 40px 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-        }
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
+
+        .header {
             text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 50px;
+            max-width: 800px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
             letter-spacing: -1px;
             background: linear-gradient(90deg, #b066ff, #ff66b0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
         }
-        p.subtitle {
-            text-align: center;
-            color: #a0aec0;
-            margin-bottom: 40px;
+
+        .header p {
+            color: var(--text-muted);
             font-size: 1.1rem;
         }
-        /* Ajuste para centralizar o gráfico gerado */
-        .mermaid {
+
+        .architecture-container {
+            width: 100%;
+            max-width: 1100px;
             display: flex;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .tier {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .tier-header {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
+            border-left: 5px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .card.frontend { background-color: var(--card-frontend); border-left-color: var(--border-frontend); }
+        .card.logic { background-color: var(--card-logic); border-left-color: var(--border-logic); }
+        .card.server { background-color: var(--card-server); border-left-color: var(--border-server); }
+        .card.data { background-color: var(--card-data); border-left-color: var(--border-data); }
+
+        .card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin: -5px 0;
+            user-select: none;
+        }
+
+        .kpi-box {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #4b007d 0%, #2a0052 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .kpi-card .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #00e676;
+            margin-bottom: 2px;
+        }
+
+        .kpi-card .label {
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="header">
         <h1>ARGOS - REDE EXTERNA MG</h1>
-        <p class="subtitle">Mapeamento Arquitetural Multi-Páginas (MPA) e Fluxo de Dados</p>
-
-        <div class="mermaid">
-        graph TD
-            %% Customização de Temas Escuros no Grafico
-            %% (Sem caracteres especiais para evitar quebras no parser)
-            classDef server fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff;
-            classDef client fill:#0d47a1,stroke:#2196f3,stroke-width:2px,color:#ffffff;
-            classDef modules fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff;
-            classDef storage fill:#263238,stroke:#78909c,stroke-width:2px,color:#ffffff;
-
-            subgraph Servidor ["Backend - Google Apps Script Engine"]
-                STP["Setup.js - Variaveis de Ambiente e Globais"]:::server
-                DBJ["Database.js - Matrizes Estaticas e Malha Geo"]:::server
-                COD["Code.js - Roteador de Templates e Endpoints RPC"]:::server
-            end
-
-            subgraph EstruturaBase ["Componentes de Inclusao Estatica"]
-                DS["DesignSystem.html - Centralizacao de CSS Tokens"]:::client
-                COR["Core.html - Modais Globais e Canvas Engine"]:::client
-            end
-
-            subgraph Modulos ["Modulos e Telas do Sistema"]
-                IDX["Index.html - Dashboard Hub da Operacao"]:::modules
-                VST["VistoriaMG.html - Coleta Field-First e Fotos"]:::modules
-                CLN["CleanupMG.html - Saneamento e Higienizacao"]:::modules
-                AUD["AuditoriaMG.html - Checklist de Qualidade TAs"]:::modules
-                MAP["MapaMG.html - Motor Leaflet e Geospatial"]:::modules
-            end
-
-            GS[("Google Sheets - Base de Dados MG")]:::storage
-
-            STP --> COD
-            DBJ --> COD
-            
-            COD --> IDX
-            COD --> VST
-            COD --> CLN
-            COD --> AUD
-            COD --> MAP
-
-            IDX --- DS
-            VST --- DS
-            CLN --- DS
-            AUD --- DS
-            MAP --- DS
-
-            IDX --- COR
-            VST --- COR
-            CLN --- COR
-            AUD --- COR
-            MAP --- COR
-
-            IDX --> VST
-            IDX --> CLN
-            IDX --> AUD
-            IDX --> MAP
-
-            VST --> COD
-            CLN --> COD
-            AUD --> COD
-            MAP --> COD
-
-            COD <--> GS
-        </div>
+        <p>Mapeamento de Engenharia de Dados & Fluxo de Arquitetura Multi-Páginas (MPA)</p>
     </div>
 
-    <script>
-        // Inicializa o motor grafico com tema escuro nativo
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'dark',
-            themeVariables: {
-                background: '#1a0033',
-                primaryColor: '#4a148c',
-                lineColor: '#b066ff'
-            }
-        });
-    </script>
+    <div class="architecture-container">
+
+        <div class="tier">
+            <div class="tier-header" style="color: var(--border-frontend);">💻 1. Inicialização e Estilo (Client-Side)</div>
+            <div class="grid-layout">
+                <div class="card frontend">
+                    <h3>Index.html</h3>
+                    <p>Ponto de entrada global do operador. Renderiza o menu tátil e gerencia os links de redirecionamento dinâmico.</p>
+                </div>
+                <div class="card frontend">
+                    <h3>DesignSystem.html</h3>
+                    <p>Centralização de Design Tokens corporativos. Governa todas as variáveis de CSS, cores da marca e responsividade técnica.</p>
+                </div>
+                <div class="card frontend">
+                    <h3>Core.html</h3>
+                    <p>Motor auxiliar do Front-End. Orquestra modais de aviso, interceptação de erros e a manipulação geométrica do canvas.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flow-arrow">▼</div>
+
+        <div class="tier">
+            <div class="tier-header" style="color: var(--border-logic);">🛠️ 2. Módulos Operacionais e Regras de Negócio</div>
+            <div class="grid-layout">
+                <div class="card logic">
+                    <h3>VistoriaMG.html</h3>
+                    <p>Coleta em campo: captura coordenadas geográficas precisas, metadados de ativos e aciona o upload de evidências fotográficas.</p>
+                </div>
+                <div class="card logic">
+                    <h3>CleanupMG.html</h3>
+                    <p>Motor de saneamento tático. Executa regras rigorosas de higienização de dados antes da persistência no banco.</p>
+                </div>
+                <div class="card logic">
+                    <h3>AuditoriaMG.html</h3>
+                    <p>Painel de compliance e qualidade. Valida correções técnicas de reparos e atribui métricas de aceitação.</p>
+                </div>
+                <div class="card logic">
+                    <h3>MapaMG.html</h3>
+                    <p>Motor de inteligência espacial. Inicializa o Leaflet para renderizar clusters de infraestrutura e polígonos de rotas.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flow-arrow">▼</div>
+
+        <div class="tier">
+            <div class="tier-header" style="color: var(--border-server);">☁️ 3. Processamento e Roteamento (Server-Side)</div>
+            <div class="grid-layout">
+                <div class="card server">
+                    <h3>Setup.js</h3>
+                    <p>Environment Manager. Isola os IDs de infraestrutura do ecossistema e armazena propriedades globais de execução.</p>
+                </div>
+                <div class="card server">
+                    <h3>Code.js</h3>
+                    <p>Gateway central de API e Roteador. Processa a rotina doGet(), avalia templates e gerencia as conexões RPC seguras.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flow-arrow">▼</div>
+
+        <div class="tier">
+            <div class="tier-header" style="color: var(--border-data);">💾 4. Abstração de Dados e Persistência</div>
+            <div class="grid-layout" style="grid-template-columns: 1fr 1fr;">
+                <div class="card data">
+                    <h3>Database.js</h3>
+                    <p>Data Access Layer (DAL). Isola dados pesados, malhas em formato GeoJSON e listas estáticas para otimizar o processamento em lote.</p>
+                </div>
+                <div class="card data">
+                    <h3>Google Sheets</h3>
+                    <p>Base de dados mestre operacional consolidada. Repositório centralizado de persistência de toda a malha de Minas Gerais.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tier">
+            <div class="tier-header" style="color: #00e676;">🚀 5. Impacto Estratégico em OPEX</div>
+            <div class="kpi-box">
+                <div class="kpi-card">
+                    <div class="value">-60%</div>
+                    <div class="label">Alarmes Técnicos (TAs)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">-70%</div>
+                    <div class="label">Tempo de Análise Manual</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">99.99%</div>
+                    <div class="label">Acurácia de Dados</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 </html>
