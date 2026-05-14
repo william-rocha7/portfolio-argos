@@ -1,45 +1,48 @@
 graph TD
-    %% Definições de Estilo
-    classDef entry fill:#eceff1,stroke:#37474f,stroke-width:2px;
-    classDef style fill:#f8bbd0,stroke:#880e4f,stroke-width:2px;
-    classDef logic fill:#e1bee7,stroke:#4a148c,stroke-width:2px;
-    classDef module fill:#fff9c4,stroke:#f57f17,stroke-width:2px;
-    classDef backend fill:#c8e6c9,stroke:#1b5e20,stroke-width:2px;
-    classDef database fill:#b3e5fc,stroke:#01579b,stroke-width:2px;
+    %% Estilos de Identificação
+    classDef ui fill:#f0f4c3,stroke:#827717,stroke-width:2px;
+    classDef logic fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef server fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+    classDef data fill:#fff3e0,stroke:#e65100,stroke-width:2px;
 
-    subgraph "1. Camada Base (Single Page Application - SPA)"
-        IDX["Index.html<br/>Ponto de entrada. Estrutura o esqueleto HTML da aplicação e importa dependências iniciais."]:::entry
-        DS["DesignSystem.html<br/>Gerencia todo o CSS, variáveis de cor, responsividade e componentes visuais padronizados da interface."]:::style
-        CR["Core.html<br/>Motor JavaScript do front-end. Controla o roteamento, estado da sessão e a troca dinâmica de telas."]:::logic
-        
-        IDX --> DS
-        IDX --> CR
+    subgraph "Camada de Interface & Estilo"
+        IDX[Index.html: Estrutura Base e Scripts Externos]:::ui
+        DS[DesignSystem.html: Definições de CSS e Componentes Visuais]:::ui
+        IDX --- DS
     end
 
-    subgraph "2. Módulos Operacionais (Regras de Negócio e UI)"
-        CR -->|Renderiza via DOM| VST["VistoriaMG.html<br/>Módulo de campo: Formulários técnicos, captura de coordenadas e evidências."]:::module
-        CR -->|Renderiza via DOM| MAP["MapaMG.html<br/>Módulo Geoespacial: Renderiza a planta externa e clusters de infraestrutura."]:::module
-        CR -->|Renderiza via DOM| AUD["AuditoriaMG.html<br/>Painel gerencial: Visualização de conformidades, falhas e indicadores (TAs)."]:::module
-        CR -->|Renderiza via DOM| CLN["CleanupMG.html<br/>Motor de Validação: Processo de verificação rigorosa antes da consolidação dos dados."]:::module
+    subgraph "Motor de Navegação (Front-end)"
+        CORE[Core.html: Gestor de Roteamento e Troca de Ecrãs SPA]:::logic
+        IDX --> CORE
     end
 
-    subgraph "3. Controladores Back-end (Google Apps Script)"
-        STP["Setup.js<br/>Inicializa configurações globais, variáveis de ambiente e parâmetros do sistema."]:::backend
-        COD["Code.js<br/>API Controller: Recebe requisições do front-end (doGet/doPost) e orquestra a lógica no servidor."]:::backend
-        
-        STP --> COD
+    subgraph "Módulos de Operação (Lógica de Negócio)"
+        VIST[VistoriaMG.html: Formulários de Campo e Recolha de Evidências]:::logic
+        MAPA[MapaMG.html: Visualização Geoespacial de Infraestrutura]:::logic
+        AUDT[AuditoriaMG.html: Painel de Conformidade e Alertas Técnicos]:::logic
+        CLEAN[CleanupMG.html: Algoritmo de Verificação e Saneamento de Dados]:::logic
     end
 
-    subgraph "4. Camada de Persistência e Dados"
-        DBJ["Database.js<br/>Data Access Layer (DAL): Executa as operações de CRUD, filtragem e queries no banco."]:::database
-        BD[("Base de Dados Operacional<br/>(Google Sheets / Fabric / GCP)")]:::database
-        
-        COD <--> DBJ
-        DBJ <--> BD
+    CORE --> VIST
+    CORE --> MAPA
+    CORE --> AUDT
+    CORE --> CLEAN
+
+    subgraph "Orquestração de Servidor (Apps Script)"
+        CODE[Code.js: Controlador Central e Endpoints da API]:::server
+        SETUP[Setup.js: Configuração de Variáveis de Ambiente e Permissões]:::server
+        SETUP --> CODE
     end
 
-    %% Integração Front-End <-> Back-End via API do Google Apps Script
-    VST -.->|google.script.run.salvarVistoria()| COD
-    MAP -.->|google.script.run.buscarDadosGeograficos()| COD
-    AUD -.->|google.script.run.gerarRelatorioAuditoria()| COD
-    CLN -.->|google.script.run.processarCleanup()| COD
+    %% Chamadas de Funções Remotas
+    VIST -.->|google.script.run| CODE
+    MAPA -.->|google.script.run| CODE
+    AUDT -.->|google.script.run| CODE
+    CLEAN -.->|google.script.run| CODE
+
+    subgraph "Camada de Persistência"
+        DB[Database.js: Interface de Acesso ao Banco de Dados - CRUD]:::data
+        STOR[(Base de Dados: Google Sheets / Cloud Storage)]:::data
+        CODE <--> DB
+        DB <--> STOR
+    end
