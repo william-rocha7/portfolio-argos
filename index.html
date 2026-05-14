@@ -3,262 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Argos - Arquitetura de Sistemas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Argos - Fluxograma de Arquitetura</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: radial-gradient(circle at top, #1a0033 0%, #050010 100%);
-            --card-frontend: rgba(13, 71, 161, 0.15);
-            --border-frontend: #1e88e5;
-            --card-logic: rgba(74, 20, 140, 0.15);
-            --border-logic: #9c27b0;
-            --card-server: rgba(27, 94, 32, 0.15);
-            --border-server: #4caf50;
-            --card-data: rgba(38, 50, 56, 0.3);
-            --border-data: #78909c;
-            --text-main: #ffffff;
-            --text-muted: #a0aec0;
+            --bg-main: #060112;
+            --purple-vivo: #660099;
+            --neon-purple: #b066ff;
+            --neon-cyan: #00e676;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: var(--bg-gradient);
-            color: var(--text-main);
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at top, #1c0038 0%, #060112 100%);
+            color: #ffffff;
             font-family: 'Inter', sans-serif;
-            padding: 40px 20px;
+            padding: 30px 15px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .header {
+        /* MENU DE BOTÕES SUPERIOR (TABS) */
+        .tab-navigation {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 10px;
+            border-radius: 14px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #a0aec0;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--purple-vivo);
+            color: #fff;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 15px rgba(176, 102, 255, 0.4);
+        }
+
+        /* REPOSITÓRIO DE CONTEÚDO */
+        .content-section {
+            width: 100%;
+            max-width: 1200px;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ESPAÇO VAZIO PARA OS OUTROS ITENS */
+        .empty-state {
             text-align: center;
-            margin-bottom: 50px;
-            max-width: 800px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(90deg, #b066ff, #ff66b0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: var(--text-muted);
+            padding: 80px 20px;
+            background: var(--glass-bg);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+            color: #64748b;
             font-size: 1.1rem;
         }
 
-        .architecture-container {
-            width: 100%;
-            max-width: 1100px;
+        /* ================= DESENHO DO FLUXOGRAMA NATIVO ================= */
+        .diagram-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 30px;
-        }
-
-        .tier {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .tier-header {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
+            align-items: center;
+            position: relative;
         }
 
-        .card {
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 5px solid transparent;
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: rgba(0, 0, 0, 0.2);
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            flex-wrap: wrap;
+            position: relative;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .card.frontend { background-color: var(--card-frontend); border-left-color: var(--border-frontend); }
-        .card.logic { background-color: var(--card-logic); border-left-color: var(--border-logic); }
-        .card.server { background-color: var(--card-server); border-left-color: var(--border-server); }
-        .card.data { background-color: var(--card-data); border-left-color: var(--border-data); }
-
-        .card h3 {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-
-        .card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .flow-arrow {
+        .row-label {
+            width: 100%;
             text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--neon-purple);
+            margin-bottom: -10px;
+        }
+
+        /* NODES / CARDS DO DIAGRAMA */
+        .node {
+            background: rgba(15, 7, 32, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .node h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .node span {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            display: block;
+        }
+
+        /* CORES POR CAMADA (UX COGNITIVA) */
+        .node.init { border-color: #0077ff; box-shadow: 0 0 10px rgba(0,119,255,0.15); }
+        .node.base { border-color: #ff9900; box-shadow: 0 0 10px rgba(255,153,0,0.15); }
+        .node.mod { border-color: #ae00ff; box-shadow: 0 0 10px rgba(174,0,255,0.15); }
+        .node.srv { border-color: #00e676; box-shadow: 0 0 10px rgba(0,230,118,0.15); }
+        .node.target { border-color: #ff0055; background: linear-gradient(135deg, #20000b 0%, #0f0714 100%); }
+
+        /* SETAS E LINHAS DE CONEXÃO DIRETA */
+        .arrow-v {
             font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.2);
-            margin: -5px 0;
+            color: rgba(255, 255, 255, 0.15);
+            margin: 5px 0;
             user-select: none;
         }
 
-        .kpi-box {
+        .rpc-line {
+            width: 100%;
+            max-width: 600px;
+            height: 2px;
+            background: dashed linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+            border-bottom: 2px dashed rgba(176, 102, 255, 0.3);
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .rpc-text {
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #060112;
+            padding: 2px 10px;
+            color: var(--neon-purple);
+            letter-spacing: 1px;
+            display: inline-block;
+            transform: translateY(-10px);
+        }
+
+        /* BOX DE RESULTADOS METRICOS */
+        .kpi-container {
             display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
             margin-top: 10px;
         }
-
-        .kpi-card {
-            background: linear-gradient(135deg, #4b007d 0%, #2a0052 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 25px;
-            border-radius: 10px;
+        .kpi-item {
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
             text-align: center;
-            min-width: 200px;
         }
-
-        .kpi-card .value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #00e676;
-            margin-bottom: 2px;
-        }
-
-        .kpi-card .label {
-            font-size: 0.8rem;
-            color: #e2e8f0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .kpi-item .v { font-weight: 800; color: var(--neon-cyan); font-size: 1.1rem; }
+        .kpi-item .l { font-size: 0.65rem; color: #a0aec0; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>ARGOS - REDE EXTERNA MG</h1>
-        <p>Mapeamento de Engenharia de Dados & Fluxo de Arquitetura Multi-Páginas (MPA)</p>
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="openTab(event, 'fluxograma')">📊 Fluxograma</button>
+        <button class="tab-btn" onclick="openTab(event, 'index')">Index.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'design')">DesignSystem.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'core')">Core.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'vistoria')">VistoriaMG.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'cleanup')">CleanupMG.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'auditoria')">AuditoriaMG.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'mapa')">MapaMG.html</button>
+        <button class="tab-btn" onclick="openTab(event, 'setup')">Setup.js</button>
+        <button class="tab-btn" onclick="openTab(event, 'code')">Code.js</button>
+        <button class="tab-btn" onclick="openTab(event, 'database')">Database.js</button>
     </div>
 
-    <div class="architecture-container">
-
-        <div class="tier">
-            <div class="tier-header" style="color: var(--border-frontend);">💻 1. Inicialização e Estilo (Client-Side)</div>
-            <div class="grid-layout">
-                <div class="card frontend">
-                    <h3>Index.html</h3>
-                    <p>Ponto de entrada global do operador. Renderiza o menu tátil e gerencia os links de redirecionamento dinâmico.</p>
-                </div>
-                <div class="card frontend">
-                    <h3>DesignSystem.html</h3>
-                    <p>Centralização de Design Tokens corporativos. Governa todas as variáveis de CSS, cores da marca e responsividade técnica.</p>
-                </div>
-                <div class="card frontend">
-                    <h3>Core.html</h3>
-                    <p>Motor auxiliar do Front-End. Orquestra modais de aviso, interceptação de erros e a manipulação geométrica do canvas.</p>
+    <div id="fluxograma" class="content-section active">
+        <div class="diagram-wrapper">
+            
+            <div class="row-label">1. Entrada de Requisições (Client-Side)</div>
+            <div class="diagram-row">
+                <div class="node init">
+                    <h4>Index.html</h4>
+                    <span>Dashboard & Hub de Links</span>
                 </div>
             </div>
-        </div>
 
-        <div class="flow-arrow">▼</div>
+            <div class="arrow-v">▼</div>
 
-        <div class="tier">
-            <div class="tier-header" style="color: var(--border-logic);">🛠️ 2. Módulos Operacionais e Regras de Negócio</div>
-            <div class="grid-layout">
-                <div class="card logic">
-                    <h3>VistoriaMG.html</h3>
-                    <p>Coleta em campo: captura coordenadas geográficas precisas, metadados de ativos e aciona o upload de evidências fotográficas.</p>
+            <div class="row-label">2. Componentes Globais Injetados</div>
+            <div class="diagram-row">
+                <div class="node base">
+                    <h4>DesignSystem.html</h4>
+                    <span>Tokens de CSS & UI</span>
                 </div>
-                <div class="card logic">
-                    <h3>CleanupMG.html</h3>
-                    <p>Motor de saneamento tático. Executa regras rigorosas de higienização de dados antes da persistência no banco.</p>
-                </div>
-                <div class="card logic">
-                    <h3>AuditoriaMG.html</h3>
-                    <p>Painel de compliance e qualidade. Valida correções técnicas de reparos e atribui métricas de aceitação.</p>
-                </div>
-                <div class="card logic">
-                    <h3>MapaMG.html</h3>
-                    <p>Motor de inteligência espacial. Inicializa o Leaflet para renderizar clusters de infraestrutura e polígonos de rotas.</p>
+                <div class="node base">
+                    <h4>Core.html</h4>
+                    <span>Modais & Canvas Engine</span>
                 </div>
             </div>
-        </div>
 
-        <div class="flow-arrow">▼</div>
+            <div class="arrow-v">▼</div>
 
-        <div class="tier">
-            <div class="tier-header" style="color: var(--border-server);">☁️ 3. Processamento e Roteamento (Server-Side)</div>
-            <div class="grid-layout">
-                <div class="card server">
-                    <h3>Setup.js</h3>
-                    <p>Environment Manager. Isola os IDs de infraestrutura do ecossistema e armazena propriedades globais de execução.</p>
+            <div class="row-label">3. Módulos Operacionais Ativos (MPA)</div>
+            <div class="diagram-row">
+                <div class="node mod">
+                    <h4>VistoriaMG.html</h4>
+                    <span>Captura de Campo & Fotos</span>
                 </div>
-                <div class="card server">
-                    <h3>Code.js</h3>
-                    <p>Gateway central de API e Roteador. Processa a rotina doGet(), avalia templates e gerencia as conexões RPC seguras.</p>
+                <div class="node mod">
+                    <h4>CleanupMG.html</h4>
+                    <span>Motor de Saneamento</span>
+                </div>
+                <div class="node mod">
+                    <h4>AuditoriaMG.html</h4>
+                    <span>Compliance & Alarmes TA</span>
+                </div>
+                <div class="node mod">
+                    <h4>MapaMG.html</h4>
+                    <span>Leaflet Geo Engine</span>
                 </div>
             </div>
-        </div>
 
-        <div class="flow-arrow">▼</div>
+            <div class="rpc-line">
+                <span class="rpc-text">EXECUÇÃO ASSÍNCRONA VIA GOOGLE.SCRIPT.RUN</span>
+            </div>
 
-        <div class="tier">
-            <div class="tier-header" style="color: var(--border-data);">💾 4. Abstração de Dados e Persistência</div>
-            <div class="grid-layout" style="grid-template-columns: 1fr 1fr;">
-                <div class="card data">
-                    <h3>Database.js</h3>
-                    <p>Data Access Layer (DAL). Isola dados pesados, malhas em formato GeoJSON e listas estáticas para otimizar o processamento em lote.</p>
+            <div class="row-label">4. Processamento & Gatekeeper (Server-Side)</div>
+            <div class="diagram-row">
+                <div class="node srv">
+                    <h4>Setup.js</h4>
+                    <span>Environment Manager</span>
                 </div>
-                <div class="card data">
-                    <h3>Google Sheets</h3>
-                    <p>Base de dados mestre operacional consolidada. Repositório centralizado de persistência de toda a malha de Minas Gerais.</p>
+                <div class="node srv">
+                    <h4>Code.js</h4>
+                    <span>Roteador & API Controller</span>
+                </div>
+                <div class="node srv">
+                    <h4>Database.js</h4>
+                    <span>Data Access Layer (DAL)</span>
                 </div>
             </div>
-        </div>
 
-        <div class="tier">
-            <div class="tier-header" style="color: #00e676;">🚀 5. Impacto Estratégico em OPEX</div>
-            <div class="kpi-box">
-                <div class="kpi-card">
-                    <div class="value">-60%</div>
-                    <div class="label">Alarmes Técnicos (TAs)</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="value">-70%</div>
-                    <div class="label">Tempo de Análise Manual</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="value">99.99%</div>
-                    <div class="label">Acurácia de Dados</div>
+            <div class="arrow-v">▼</div>
+
+            <div class="row-label">5. Persistência & Valor Estratégico (OPEX)</div>
+            <div class="diagram-row">
+                <div class="node target">
+                    <h4>Google Sheets</h4>
+                    <span>Base Mestre de Infraestrutura</span>
+                    <div class="kpi-container">
+                        <div class="kpi-item"><div class="v">-60%</div><div class="l">TAs</div></div>
+                        <div class="kpi-item"><div class="v">99.9%</div><div class="l">Acurácia</div></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
+    <div id="index" class="content-section"><div class="empty-state">Documentação do arquivo Index.html em desenvolvimento...</div></div>
+    <div id="design" class="content-section"><div class="empty-state">Documentação do arquivo DesignSystem.html em desenvolvimento...</div></div>
+    <div id="core" class="content-section"><div class="empty-state">Documentação do arquivo Core.html em desenvolvimento...</div></div>
+    <div id="vistoria" class="content-section"><div class="empty-state">Documentação do arquivo VistoriaMG.html em desenvolvimento...</div></div>
+    <div id="cleanup" class="content-section"><div class="empty-state">Documentação do arquivo CleanupMG.html em desenvolvimento...</div></div>
+    <div id="auditoria" class="content-section"><div class="empty-state">Documentação do arquivo AuditoriaMG.html em desenvolvimento...</div></div>
+    <div id="mapa" class="content-section"><div class="empty-state">Documentação do arquivo MapaMG.html em desenvolvimento...</div></div>
+    <div id="setup" class="content-section"><div class="empty-state">Documentação do arquivo Setup.js em desenvolvimento...</div></div>
+    <div id="code" class="content-section"><div class="empty-state">Documentação do arquivo Code.js em desenvolvimento...</div></div>
+    <div id="database" class="content-section"><div class="empty-state">Documentação do arquivo Database.js em desenvolvimento...</div></div>
+
+    <script>
+        function openTab(evt, tabName) {
+            // Esconde todas as seções
+            const sections = document.getElementsByClassName("content-section");
+            for (let i = 0; i < sections.length; i++) {
+                sections[i].classList.remove("active");
+            }
+
+            // Desativa todos os botões
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+
+            // Ativa a seção clicada e marca o botão correspondente como ativo
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
 </body>
 </html>
